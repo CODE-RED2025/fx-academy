@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CODE RED FX Training Room</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255, 0, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 0, 0, 0.1) 0%, transparent 50%),
+                #000;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(45deg, transparent 30%, rgba(255, 0, 0, 0.05) 50%, transparent 70%),
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 100px,
+                    rgba(255, 0, 0, 0.02) 100px,
+                    rgba(255, 0, 0, 0.02) 102px
+                );
+            pointer-events: none;
+        }
+
+        .logo {
+            font-size: 4rem;
+            font-weight: 900;
+            letter-spacing: 0.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        .logo .code {
+            color: white;
+        }
+
+        .logo .red {
+            color: #ff0000;
+            background: linear-gradient(45deg, #ff0000, #ff4444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: #cccccc;
+            margin-bottom: 3rem;
+            letter-spacing: 0.2rem;
+        }
+
+        .headline {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(45deg, #ffffff, #ff0000);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .description {
+            font-size: 1.2rem;
+            color: #cccccc;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 20px 50px;
+            background: linear-gradient(45deg, #ff0000, #cc0000);
+            color: white;
+            text-decoration: none;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 50px;
+            box-shadow: 
+                0 10px 30px rgba(255, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.5s ease;
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 15px 40px rgba(255, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 5rem;
+            padding: 0 2rem;
+            max-width: 1200px;
+        }
+
+        .feature {
+            background: rgba(255, 0, 0, 0.1);
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .feature-button {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .feature-button:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 25px 50px rgba(255, 0, 0, 0.3);
+            background: rgba(255, 0, 0, 0.15);
+        }
+
+        /* モーダルスタイル */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a1a 0%, #000000 100%);
+            margin: 2% auto;
+            padding: 2rem;
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(255, 0, 0, 0.3);
+        }
+
+        .close {
+            color: #ff0000;
+            float: right;
+            font-size: 2rem;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+            transition: all 0.3s ease;
+        }
+
+        .close:hover {
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+
+        .modal h2 {
+            color: #ff0000;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            text-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+        }
+
+        .modal h3 {
+            color: #ff0000;
+            font-size: 1.3rem;
+            margin: 1.5rem 0 1rem 0;
+            border-bottom: 1px solid rgba(255, 0, 0, 0.3);
+            padding-bottom: 0.5rem;
+        }
+
+        .modal-text {
+            color: #cccccc;
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+
+        .modal-text p {
+            margin-bottom: 1rem;
+        }
+
+        .modal-text ul {
+            margin: 1rem 0;
+            padding-left: 1rem;
+        }
+
+        .modal-text li {
+            margin-bottom: 0.5rem;
+            color: #cccccc;
+        }
+
+        .modal-text strong {
+            color: #ff0000;
+        }
+
+        /* モーダル内のスクロールバー */
+        .modal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-content::-webkit-scrollbar-track {
+            background: rgba(255, 0, 0, 0.1);
+            border-radius: 4px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb {
+            background: rgba(255, 0, 0, 0.5);
+            border-radius: 4px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 0, 0, 0.7);
+        }
+
+        .feature h3 {
+            color: #ff0000;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature p {
+            color: #cccccc;
+            line-height: 1.5;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+            }
+            to {
+                text-shadow: 0 0 40px rgba(255, 0, 0, 0.8), 0 0 60px rgba(255, 0, 0, 0.3);
+            }
+        }
+
+        .floating-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .floating-element {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #ff0000;
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 60%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 30%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px) opacity(0.3);
+            }
+            50% {
+                transform: translateY(-20px) opacity(1);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2.5rem;
+            }
+            .headline {
+                font-size: 2rem;
+            }
+            .description {
+                font-size: 1rem;
+            }
+            .cta-button {
+                padding: 15px 30px;
+                font-size: 1.1rem;
+            }
+            .features {
+                grid-template-columns: 1fr;
+                margin-top: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <div class="floating-elements">
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+            <div class="floating-element"></div>
+        </div>
+        
+        <div class="logo">
+            <span class="code">CODE</span> <span class="red">: RED</span>
+        </div>
+        <div class="subtitle">FX Training Room</div>
+        
+        <h1 class="headline">
+            『 プロトレーダーへの道がここにある 』
+        </h1>
+        
+        <p class="description">
+            初心者から上級者まで、確実にスキルアップ出来るFXトレーニングプログラム。
+            実戦的な手法とリスク管理を学び、安定した利益を目指しましょう。
+        </p>
+        
+        <a href="https://x.com/code_red_fx?s=21&t=Rw3I0LZWkZ1onTMgTO3iZw" class="cta-button">今すぐ参加する</a>
+        
+        <div class="features">
+            <div class="feature feature-button" onclick="openModal()">
+                <h3>CODE:REDとは？</h3>
+                <p>CODE:REDについての詳細はこちら</p>
+            </div>
+            <div class="feature feature-button" onclick="openCurriculumModal()">
+                <h3>実戦的カリキュラム</h3>
+                <p>現役プロトレーダーが実際に使用している目線や、方向性を段階的に学べます。</p>
+            </div>
+            <div class="feature">
+                <h3>サロン運営をしたい方へ</h3>
+                <p>責任感のあるサロン運営方法を、しっかり学べます。</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- カリキュラムモーダル -->
+    <div id="curriculumModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeCurriculumModal()">&times;</span>
+            <h2>実戦的カリキュラム</h2>
+            <div class="modal-text">
+                <p>ここでは、<strong>【CODE:RED】</strong>入会後の流れを記します。</p>
+                
+                <h3>FX初心者の方の場合</h3>
+                <h4 style="color: #ff0000; margin: 1rem 0;">■1〜2ヶ月目</h4>
+                <p>・毎日基礎テキストを、上から順番に読んで頂きます。</p>
+                
+                <div style="text-align: center; margin: 2rem 0; background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 10px; border: 1px solid rgba(255, 0, 0, 0.3);">
+                    <p style="color: #ff0000; margin-bottom: 1rem; font-size: 1.1rem; font-weight: bold;">📚 Discordチャンネル構成</p>
+                    <img src="https://github.com/user-attachments/assets/53d1e0d4-71e2-46a0-98e3-cf10fee42be0" style="max-width: 80%; height: auto; border-radius: 8px; border: 1px solid rgba(255, 0, 0, 0.2);" alt="CODE:RED Discordチャンネル構成">
+                    <p style="color: #888; margin-top: 1.5rem; font-size: 0.9rem;">※上から順番に読み進めるだけで、体系的にFXの知識が身につきます</p>
+                </div>
+                
+                <div style="margin: 2rem 0; color: #cccccc;">
+                    <p style="margin: 1rem 0;">※テキストが80個以上ありますので、全てに目を通すだけでも、最低1〜2ヶ月の期間を要します。</p>
+                    <p style="margin: 1rem 0;">時間の確保が厳しい方は、倍の期間が掛かると思って頂いた方が良いと思います。</p>
+                    
+                    <h4 style="color: #ff0000; margin: 1.5rem 0 1rem 0;">■3〜4ヶ月目</h4>
+                    <p style="margin: 0.5rem 0;">・テキスト内容を理解していく為に、分からないポイントや苦手な部分の理解。</p>
+                    
+                    <h4 style="color: #ff0000; margin: 1.5rem 0 1rem 0;">■5ヶ月目</h4>
+                    <p style="margin: 0.5rem 0;">・5ヶ月目となれば、中級者以上の知識になっていると思います。ここから<strong style="color: #ff0000;">【CODE:RED】</strong>が提供するロジック『<strong style="color: #ff0000;">Clue</strong>』を用いた実践向けのテキストに入ります。</p>
+                    
+                    <h4 style="color: #ff0000; margin: 1.5rem 0 1rem 0;">■6ヶ月目</h4>
+                    <p style="margin: 0.5rem 0;">・6ヶ月間の基礎勉強にて環境認識を覚えました。そして1ヶ月間の『<strong style="color: #ff0000;">Clue</strong>』の練習を終えたので、実弾トレードに入っていきます。</p>
+
+<div style="text-align: center; margin: 2rem 0;">
+    <img src="https://github.com/user-attachments/assets/1245ce96-56f3-4efc-be2e-cfa241af6583" style="max-width: 60%; height: auto; border-radius: 8px; border: 1px solid rgba(255, 0, 0, 0.2);" alt="実弾トレードへの扉">
+</div>
+                    
+                    <div style="background: rgba(255,0,0,0.1); padding: 1.5rem; border-radius: 10px; border: 1px solid rgba(255,0,0,0.3); margin: 2rem 0;">
+                        <p style="margin: 1rem 0;">初心者の方は、長いな〜と思ったかもしれませんが、投資はゲームや遊びではなく、あくまでも資産運用です。</p>
+                        <ul style="margin: 1rem 0; padding-left: 1rem;">
+                            <li style="margin: 0.5rem 0; color: #cccccc;">誰でも簡単に出来る</li>
+                            <li style="margin: 0.5rem 0; color: #cccccc;">即日で出来る</li>
+                        </ul>
+                        <p style="margin: 1rem 0;">この様な甘い言葉に痛い目を見てきた方なら、<strong style="color: #ff0000;">【CODE:RED】</strong>がどれだけ正論を唱えているか分かる事でしょう。</p>
+                        <p style="margin: 1rem 0;">あなたの大切なお金を守る為にも、自身のペースで構わないので、必ず勉強する様にお願い致します。</p>
+                        <p style="margin: 1rem 0; font-weight: bold; color: #ff0000;">何なら、1年かけても良いでしょう。</p>
+                        <p style="margin: 1rem 0; font-style: italic;">これらの一連の行動が、後のあなたの『裁量』になるのだから。</p>
+                    </div>
+                    
+                    <h3 style="color: #ff0000; margin: 2rem 0 1rem 0; font-size: 1.3rem; border-bottom: 1px solid rgba(255,0,0,0.3); padding-bottom: 0.5rem;">中級者以上の方の場合</h3>
+                    
+                    <h4 style="color: #ff0000; margin: 1.5rem 0 1rem 0;">■1〜2ヶ月目</h4>
+                    <p style="margin: 0.5rem 0;">・中級者と言えど、まだ未熟な部分も多くあるかと思いますので、毎日基礎テキストを上から順番に読んで頂きます。</p>
+                    
+                    <h4 style="color: #ff0000; margin: 1.5rem 0 1rem 0;">■2〜3ヶ月目</h4>
+                    <p style="margin: 0.5rem 0;">・ここから<strong style="color: #ff0000;">【CODE:RED】</strong>が提供するロジック、『<strong style="color: #ff0000;">Clue</strong>』を用いた実践向けのテキストに入ります。</p>
+                    
+                    <h4 style="color: #ff0000; margin: 1.5rem 0 1rem 0;">■3〜4ヶ月目</h4>
+                    <p style="margin: 0.5rem 0;">・各々が持つノウハウと、『<strong style="color: #ff0000;">Clue</strong>』を用いて実弾トレードを行なっていき、<strong style="color: #ff0000;">【CODE:RED】</strong>が提供するアプリやインジケーターを使用しながら、思いっきり取り引きを行って下さい。</p>
+                    
+                    <h3 style="color: #ff0000; margin: 2rem 0 1rem 0; font-size: 1.3rem; border-bottom: 1px solid rgba(255,0,0,0.3); padding-bottom: 0.5rem;">上級者の方の場合</h3>
+                    
+                    <h4 style="color: #ff0000; margin: 1.5rem 0 1rem 0;">■1ヶ月目</h4>
+                    <p style="margin: 0.5rem 0;">・既に利益が安定している上級者の方は、基礎テキストではなく、平均値や各トレンド、各レンジについてを解説した『<strong style="color: #ff0000;">特別テキスト</strong>』で学んで頂きます。</p>
+                    
+                    <h4 style="color: #ff0000; margin: 1.5rem 0 1rem 0;">■2ヶ月目</h4>
+                    <p style="margin: 0.5rem 0;">・<strong style="color: #ff0000;">【CODE:RED】</strong>が提供するアプリやインジケーター、<strong style="color: #ff0000;">【CODE:RED】</strong>が提供するロジック『<strong style="color: #ff0000;">Clue</strong>』を学んで、今まで以上に安定したトレードを行なって頂けたら幸いです。</p>
+                    
+                    <p style="margin: 2rem 0; font-weight: bold;">以上が、<strong style="color: #ff0000;">【CODE:RED】</strong>が提供するコンテンツの入会後の流れとなります。</p>
+                    
+                    <div style="text-align: center; background: rgba(255,0,0,0.1); padding: 2rem; border-radius: 15px; border: 1px solid rgba(255,0,0,0.3); margin: 2rem 0;">
+                        <p style="font-size: 1.2rem; font-weight: bold; color: #ff0000; margin-bottom: 1rem;"><strong style="color: #ff0000;">【CODE:RED】</strong>は、</p>
+                        <p style="font-size: 1.3rem; font-weight: bold; color: #ffffff; margin: 1rem 0;">当たり前の事を学んで、当たり前の結果を！</p>
+                        <p style="color: #cccccc; margin-top: 1rem;">がコンセプトとなります。</p>
+                    </div>
+                    
+                    <p style="margin: 1.5rem 0;">学ぶ事は多く大変ですが、逆に毎日が楽しくなるでしょう。</p>
+                    <p style="margin: 1.5rem 0; font-weight: bold; color: #ff0000; text-align: center;"><strong style="color: #ff0000;">【CODE:RED】</strong>に入会して良かった…と必ず思って頂けるかと思いますので、是非ご検討下さい。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- モーダル -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>【CODE:RED】とは？</h2>
+            <div class="modal-text">
+                <p><strong>【CODE:RED】</strong>とは、『緊急事態』や『危機的状況』を指す言葉として使われます。</p>
+                
+                <p>為替取引を行っている多くの人達が負けている状況は、間違いなく緊急事態です。</p>
+                
+                <p>だからこそ、こちらの名前となりました。</p>
+                
+                <p><strong>【CODE:RED】</strong>は、</p>
+                <p style="text-align: center; font-size: 1.2rem; color: #ff0000; margin: 1rem 0;"><strong>当たり前の事を学んで、当たり前の結果を！</strong></p>
+                <p>をコンセプトに、会員の方に勉強をしてもらうコミュニティーです。</p>
+                
+                <p>イメージ的には、ジムの様な在り方と思って貰えたら嬉しいです。</p>
+                
+                <p>自身の都合の良い日や隙間時間に、自主的に鍛える…<strong>【CODE:RED】</strong>の学習も、この様な捉え方でOK。</p>
+                
+                <p>何をするのか？と言うと、Discordにあるテキストを、毎日読み進めるだけです。</p>
+                
+                <p>テキストは<strong>【CODE:RED】</strong>が厳選した配置になっておりますので、上から順に読むだけで知識が付きます。</p>
+                
+                <p><strong>1年間学べばプロトレーダーと変わらない知識になるでしょう。</strong></p>
+                
+                <h3>会員の方の特典</h3>
+                <ul>
+                    <li><strong>【CODE:RED】</strong>会員専用アプリ</li>
+                    <li><strong>【CODE:RED】</strong>オリジナルインジケーター</li>
+                    <li><strong>【CODE:RED】</strong>基礎知識テキスト＆動画</li>
+                    <li><strong>【CODE:RED】</strong>会員限定 環境認識方法</li>
+                </ul>
+                
+                <p>テキスト＋これらのコンテンツが全部使い放題です。</p>
+                
+                <p>全て重要なコンテンツですが、特に重要なのは</p>
+                <ul>
+                    <li>Lot数を算出してくれるアプリ</li>
+
+<div style="text-align: center; margin: 2rem 0;">
+    <img src="https://github.com/user-attachments/assets/4c1e8c72-de26-4665-b4d9-3d45b6199208" style="max-width: 50%; height: auto; border-radius: 8px; border: 1px solid rgba(255, 0, 0, 0.2);" alt="CODE:RED Lot計算ツール">
+</div>
+
+
+                    <li>通貨強弱を確認出来るアプリ</li>
+
+<div style="text-align: center; margin: 2rem 0;">
+    <img src="https://github.com/user-attachments/assets/a318333f-5623-4838-9e61-e0afe2ee421b" style="max-width: 80%; height: auto; border-radius: 8px; border: 1px solid rgba(255, 0, 0, 0.2);" alt="CODE:RED オリジナルインジケーター">
+</div>
+
+                    <li>オリジナルインジケーター</li>
+
+<div style="text-align: center; margin: 2rem 0;">
+    <img src="https://github.com/user-attachments/assets/03c5ce67-51c0-4d46-b787-617598f59288" style="max-width: 80%; height: auto; border-radius: 8px; border: 1px solid rgba(255, 0, 0, 0.2);" alt="CODE:RED 通貨強弱アプリ">
+</div>
+
+<p style="margin: 1rem 0; color: #ffff00; font-weight: bold; text-align: center;">画像のインジケータは、未来の価格予想ツールです。</p>
+
+                </ul>
+                <p>となります。</p>
+                
+                <p>特にバイナリーオプションからFXへ移行してきた方は、今までのペイアウト率と変わってくる為、Lotに躓いてると思いますが…。</p>
+                
+                <p><strong>【CODE:RED】</strong>では、その問題が一瞬で解決出来るのです。</p>
+                
+                <p style="color: #ff0000; font-weight: bold;">1.000円betとは何Lotなのか？</p>
+                
+                <p>これらを一瞬で算出してくれる為、今後FXをやる上で、なくてはならないアプリなのは間違いありません。</p>
+                
+                <p>バイナリーオプショントレーダーには、非常に重宝すると思います。</p>
+                
+                <p>そして通貨強弱アプリに関しては、相関が一瞬で分かります。</p>
+                
+                <p>巷にある通貨強弱と仕様が異なり、あくまでも<strong>【CODE:RED】</strong>限定仕様となりますので、確実に手放せない代物です。</p>
+                
+                <p>オリジナルインジケーターも数種類ご用意しております。</p>
+                
+                <p>この様に<strong>【CODE:RED】</strong>は、初心者の方であれば勉強メイン、中級者以上の方であればアプリやインジケーター目的でご利用が可能です。</p>
+                
+                <p>そして、今後コンテンツ量が増えていきます。</p>
+                
+                <p style="text-align: center; margin: 2rem 0;">
+                    <strong>【CODE:RED】</strong>の会員になって良かった<br>
+                    <strong>【CODE:RED】</strong>を見つけて良かった
+                </p>
+                
+                <p>と必ず思うと思いますので、是非ご入会下さい。</p>
+                
+                <div style="text-align: center; margin: 2rem 0;">
+    <img src="https://github.com/user-attachments/assets/042c598c-e287-4bb0-b271-f1c36c5afb1f" style="max-width: 80%; height: auto; border-radius: 10px; border: 1px solid rgba(255, 0, 0, 0.2);" alt="CODE:RED 料金表">
+</div>
+                
+                <p style="text-align: center; font-weight: bold;">ご希望の方は、<strong>【CODE:RED】</strong>公式XのDMよりご連絡をお願い致します。</p>
+            </div>
+
+<div style="background: rgba(255,0,0,0.05); padding: 1.5rem; border-radius: 10px; border: 1px solid rgba(255,0,0,0.2); margin: 2rem 0;">
+    <p style="margin-bottom: 1rem; font-weight: bold; color: #ff0000;">その際は、</p>
+    <ul style="margin: 1rem 0; padding-left: 1.5rem; text-align: left;">
+        <li style="margin: 0.5rem 0; color: #cccccc;">Discord名</li>
+        <li style="margin: 0.5rem 0; color: #cccccc;">性別</li>
+        <li style="margin: 0.5rem 0; color: #cccccc;">年齢</li>
+        <li style="margin: 0.5rem 0; color: #cccccc;">トレード歴</li>
+    </ul>
+    <p style="margin-top: 1rem; color: #cccccc;">を添えて下さい。</p>
+    <p style="margin-top: 1rem; color: #cccccc;">PayPay支払いページをお送り致しますので、決済確認後、Discordへ招待致します。</p>
+</div>
+
+        </div>
+    </div>
+
+    <script>
+        function openModal() {
+            document.getElementById('modal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function openCurriculumModal() {
+            document.getElementById('curriculumModal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeCurriculumModal() {
+            document.getElementById('curriculumModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // モーダル外をクリックした時に閉じる
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal');
+            const curriculumModal = document.getElementById('curriculumModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+            if (event.target == curriculumModal) {
+                closeCurriculumModal();
+            }
+        }
+    </script>
+</body>
+</html>
+
